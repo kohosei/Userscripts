@@ -4,12 +4,16 @@
 
 ---
 
-## 🎯 プロジェクト概要 & 技術スタック
+## 🎯 プロジェクト概要 & AI エージェントの役割
 - **プロジェクト名**: Userscripts (Safari iOS/macOS ユーザースクリプト & スタイル集)
+- **対象プラットフォーム**:
+  - **Safari 拡張機能「Userscripts」** (iOS / iPadOS / macOS - [quoid/userscripts](https://github.com/quoid/userscripts))
+  - **Tampermonkey** (Chrome / Safari / Firefox / Edge 等)
 - **主言語 / ランタイム**: JavaScript (ES2020+), CSS (CSS3), Node.js v23+
-- **プラットフォーム**: Safari 拡張機能「Userscripts」(iOS / iPadOS / macOS)
-- **主要な責務**:
-  - iOS/macOS の Safari 上で各種 Web サイト（X, Instagram, YouTube, 音泉, ファンクラブサイト等）の不要要素非表示、UI 改善、自動ログイン、操作支援を提供する。
+- **AI エージェントの責務**:
+  - Tampermonkey および Safari Userscripts の**両環境で完全な互換性を持つ**ユーザースクリプト（JS）とカスタムスタイル（CSS/JS）を作成・保守する専門アシスタントです。
+  - ユーザーから「対象のサイト」「やりたいこと」「言語（JSまたはCSS）」の要件を受け取り、公式仕様に完全に準拠したメタデータと本体コードを生成・更新します。
+  - ユーザーへの挨拶や余分な解説は最小限に留め、正確でそのまま実用可能なコードの出力を最優先します。
 
 ---
 
@@ -23,6 +27,7 @@
   ├── .git (テキストファイル: gitdir: /Users/user/_Costom_Local_User_Folder/_Antigravity/userscripts.git を指す)
   ├── .gitignore
   ├── AGENTS.md
+  ├── README.md
   └── *.js, *.css (スクリプト本体群)
 
 [ローカルストレージ (Git管理領域 / 実体)]
@@ -40,38 +45,123 @@
 
 ---
 
-## 📐 スクリプト & スタイル記述規約
+## 🔬 両プラットフォームの最新仕様 & 互換性の検証知見
 
-すべてのファイルは、Safari 拡張「Userscripts」が正しくメタデータを読み取れるよう、以下の形式を厳守してください。
+Tampermonkey および Safari Userscripts (`quoid/userscripts`) の公式最新ドキュメントに基づく重要仕様です。
 
-### 1. Userscript (`.js`)
-- 必ず先頭に `==UserScript==` メタデータブロックを記述する。
-- グローバルスコープ汚染を防ぐため、全体を即時関数（IIFE）かつ `'use strict';` で記述する。
+### 1. CSS（スタイルシート）の互換性の壁と解決策
+- **Tampermonkey の仕様**:
+  - Tampermonkey はスクリプトマネージャであり、`.css` や `/* ==UserStyle== */` の**プレーンCSSファイルを直接読み込む機能はありません**。
+  - Tampermonkey でスタイルを適用する場合は、ユーザースクリプト (`.js`) 内で `GM_addStyle` や `<style>` 要素の挿入を行う必要があります。
+- **Safari Userscripts (`quoid/userscripts`) の仕様**:
+  - 過去に独自の `/* ==UserStyle== */` をサポートしていましたが、公式開発において非推奨・廃止傾向にあり、作者（quoid氏）自身が**「`==UserStyle==` ではなく、標準ユーザースクリプトとして `GM.addStyle(css)` / `GM_addStyle(css)` を使うこと」を公式に推奨**しています。
+- **💡 互換性のベストプラクティス**:
+  - **【両環境完全互換（推奨）】**: スタイル適用であっても、**JavaScript 形式（`GM_addStyle` またはフォールバック付きスタイル注入）で記述した `.js`** を生成する。これにより Tampermonkey と Safari Userscripts の両方で100%同一コードで動作します。
+  - **【Safari Userscripts 専用】**: ユーザーが単体の `.css` ファイルとしての出力を希望した場合のみ、Safari Userscripts 専用の `/* ==UserStyle== */` 形式で出力する（Tampermonkey では動作しない旨を明記）。
+
+### 2. URL マッチング仕様
+- **`@match` の統一使用**:
+  - Safari Userscripts では `@include` や `@exclude` は非推奨（Deprecated）化されており、`@match` および `@exclude-match` のみが正式サポートされています。
+  - スキームは `http://` または `https://`（あるいはワイルドカード `*://`）のみ使用可能です。
+- **`@namespace`**:
+  - Tampermonkey ではスクリプトの一意性識別のために推奨されます。Safari Userscripts では無視されますが、害はないため常に記述します。
+
+### 3. `@name` の命名規則
+- Safari Userscripts では `@name` がそのまま**ファイル名および UI 表示名**として使用されます。
+- ファイルシステムで不正となる文字（`/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`）は絶対に含めず、**英数字・ハイフン・アンダースコア・半角空白**を基本としてください。
+
+---
+
+## 📐 スクリプト & スタイル実装規範・メタデータ生成仕様
+
+### 1. JavaScript (DOM操作・機能拡張)
+- **グローバル汚染防止**: 即時実行関数式（IIFE）かつ `'use strict';` で記述。
+- **遅延ロード / SPA 対応**:
+  - 対象要素が即座に存在しない場合に備え、`MutationObserver` または `document.readyState` 待機処理を組み込む。
+- **権限設定**:
+  - 特殊API（GM_*）を使用しない場合は `@grant none` を明記してサンドボックスオーバーヘッドを回避。
 
 ```javascript
 // ==UserScript==
-// @name         スクリプトの名称
-// @match        https://example.com/*
-// @run-at       document-idle
+// @name         [スクリプト名（英数字推奨）]
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  [スクリプトの説明]
+// @match        [対象サイトのURLパターン（例: https://example.com/*）]
 // @grant        none
+// @run-at       document-end
 // ==/UserScript==
 
-(function () {
-  'use strict';
+(function() {
+    'use strict';
 
-  // 処理本体
+    // 遅延ロード対応の要素監視例
+    const observer = new MutationObserver(() => {
+        const target = document.querySelector('.target-selector');
+        if (target) {
+            // 処理実行
+            observer.disconnect();
+        }
+    });
+
+    observer.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true
+    });
 })();
 ```
 
-### 2. UserStyle (`.css`)
-- 必ず先頭に `==UserStyle==` メタデータブロックを記述する。
+---
+
+### 2. カスタムスタイル (両環境完全互換形式: JavaScript + GM_addStyle) 【推奨】
+Tampermonkey と Safari Userscripts の両方で確実にスタイルを適用するための完全互換形式です。
+
+```javascript
+// ==UserScript==
+// @name         [スタイル名（英数字推奨）]
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  [スタイルの説明]
+// @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @grant        GM_addStyle
+// @run-at       document-start
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    const css = `
+        .unwanted-element {
+            display: none !important;
+        }
+    `;
+
+    // GM_addStyle または DOM注入のフォールバック
+    if (typeof GM_addStyle !== 'undefined') {
+        GM_addStyle(css);
+    } else {
+        const style = document.createElement('style');
+        style.textContent = css;
+        (document.head || document.documentElement).appendChild(style);
+    }
+})();
+```
+
+---
+
+### 3. カスタムスタイル (Safari Userscripts 専用: .css / .user.css)
+Safari Userscripts の独自機能を利用した単体 CSS ファイルです（Tampermonkey では動作しません）。
+
+> [!WARNING]
+> - `@run-at` や `@inject-into` は JavaScript 専用メタデータです。**CSS には絶対に含めないでください**。
+> - `@include` は非推奨です。必ず **`@match`** を使用してください。
 
 ```css
 /* ==UserStyle==
-@name           スタイルの名称
-@version        1.0
-@description    スタイルの説明
-@match          https://example.com/*
+@name          [スタイル名（英数字推奨）]
+@version       1.0
+@description   [スタイルの説明]
+@match         https://example.com/*
 ==/UserStyle== */
 
 .unwanted-element {
@@ -94,7 +184,7 @@
 
 - **プレフィックス (`type`)**:
   - `feature/`: 新規スクリプト・スタイル追加、機能拡張
-  - `fix/`: セレクタ変更対応、不具合修正
+  - `fix/`: セレクタ変更対応、不具合修正、DOM遅延対応
   - `refactor/`: リファクタリング
   - `test/`: 検査コマンド・テスト追加
   - `chore/`: 設定ファイル・`.gitignore` 更新
@@ -118,7 +208,7 @@ AI エージェントは、ユーザーからタスクを指示された際、�
    ```
 3. **Implementation (実装)**:
    - 既存機能を破壊しないよう慎重に実装する。
-   - ヘッダーメタデータ（`@name`, `@match` 等）を正確に記載する。
+   - 上記のメタデータ仕様（`@name`, `@match` 等）および実装規範（遅延ロード、詳細度）を厳守する。
 4. **Quality Gate (自動検査)**:
    - **コミット前に必ず後述の自動検査コマンドを全件パス**させる。
    ```bash
@@ -151,6 +241,7 @@ node --check *.js
 スクリプトにヘッダーが欠落していないか確認します。
 - `.js` ファイル: `grep -L "==UserScript==" *.js` の出力が空であること
 - `.css` ファイル: `grep -L "==UserStyle==" *.css` の出力が空であること
+- CSS専用検査: `grep -E "@run-at|@inject-into" *.css` の出力が空であること（CSSへのJS用メタデータ混入防止）
 
 ---
 
