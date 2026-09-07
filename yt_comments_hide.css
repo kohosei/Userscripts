@@ -1,0 +1,30 @@
+/* ==UserStyle==
+@name           Hide comments and live chat on YouTube
+@description    YouTubeのコメント欄とライブチャット欄を非表示
+@include        https://www.youtube.com/*
+@include        http://www.youtube.com/*
+@include        https://youtube.com/*
+@include        http://youtube.com/*
+==/UserStyle== */
+
+/* 動画ページのコメント欄を非表示 */
+#comments,
+ytd-comments,
+ytd-item-section-renderer#sections {
+  display: none !important;
+}
+
+/* ライブ配信のチャット欄を非表示 */
+#chat,
+#chat-container,
+ytd-live-chat-frame,
+ytd-live-chat-frame #contents,
+ytd-live-chat-frame #item-scroller {
+  display: none !important;
+}
+
+/* シアターモードなどで右側に出るチャットも念のため */
+ytd-watch-flexy[theater] #chat,
+ytd-watch-flexy[theater] #chat-container {
+  display: none !important;
+}

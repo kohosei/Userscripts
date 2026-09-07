@@ -1,0 +1,14 @@
+/* ==UserStyle==
+@name           Hide selected elements on lovelive-liellaclub.jp
+@description    mekuliella_caption と footer の link_text を非表示
+@include        https://lovelive-liellaclub.jp/*
+@include        http://lovelive-liellaclub.jp/*
+==/UserStyle== */
+
+#mekuliella_content > div.mekuliella_caption {
+  display: none !important;
+}
+
+footer > ul.link_text {
+  display: none !important;
+}

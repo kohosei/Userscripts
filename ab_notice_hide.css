@@ -1,0 +1,15 @@
+/* ==UserStyle==
+@name           Hide sub-txt-list on apollobaycruiser.jp
+@description    .sub-txt-list を非表示
+@include        https://apollobaycruiser.jp/*
+@include        http://apollobaycruiser.jp/*
+==/UserStyle== */
+
+.sub-txt-list {
+  display: none !important;
+}
+
+/* バースデーページ内など */
+.attention {
+  display: none !important;
+}
