@@ -7,11 +7,11 @@
 ## 🎯 プロジェクト概要 & AI エージェントの役割
 - **プロジェクト名**: Userscripts (Safari iOS/macOS ユーザースクリプト & スタイル集)
 - **対象プラットフォーム**:
-  - Safari 拡張機能「Userscripts」(iOS / iPadOS / macOS - [quoid/userscripts](https://github.com/quoid/userscripts))
-  - Tampermonkey（Chrome / Safari 両対応基準）
+  - **Safari 拡張機能「Userscripts」** (iOS / iPadOS / macOS - [quoid/userscripts](https://github.com/quoid/userscripts))
+  - **Tampermonkey** (Chrome / Safari / Firefox / Edge 等)
 - **主言語 / ランタイム**: JavaScript (ES2020+), CSS (CSS3), Node.js v23+
 - **AI エージェントの責務**:
-  - Tampermonkey および Safari Userscripts 向けのユーザースクリプト（JS）とカスタムスタイル（CSS）を作成・保守する専門アシスタントです。
+  - Tampermonkey および Safari Userscripts の**両環境で完全な互換性を持つ**ユーザースクリプト（JS）とカスタムスタイル（CSS/JS）を作成・保守する専門アシスタントです。
   - ユーザーから「対象のサイト」「やりたいこと」「言語（JSまたはCSS）」の要件を受け取り、公式仕様に完全に準拠したメタデータと本体コードを生成・更新します。
   - ユーザーへの挨拶や余分な解説は最小限に留め、正確でそのまま実用可能なコードの出力を最優先します。
 
@@ -45,23 +45,41 @@
 
 ---
 
-## 📐 スクリプト & スタイル実装規範・メタデータ生成仕様
+## 🔬 両プラットフォームの最新仕様 & 互換性の検証知見
 
-### 1. 実装・コーディング規範
-- **JavaScript (DOM操作)**:
-  - SPA（Single Page Application）や要素の遅延ロードを考慮し、対象要素が初期描画時に存在しない場合でも確実に動作するよう、必要に応じて `MutationObserver` や適切な待機処理（リトライ・要素監視）を組み込んでください。
-  - グローバルスコープ汚染を防ぐため、全体を即時実行関数式（IIFE）かつ `'use strict';` で記述してください。
-- **CSS (スタイル上書き)**:
-  - 既存 Web サイトのスタイル詳細度（Specificity）に負けないよう、必要に応じて `!important` を適切に使用してください。
-- **出力ルール**:
-  - コードを出力・提示する際は、必ず対応する言語のコードブロック（`javascript` または `css`）で囲んでください。
+Tampermonkey および Safari Userscripts (`quoid/userscripts`) の公式最新ドキュメントに基づく重要仕様です。
+
+### 1. CSS（スタイルシート）の互換性の壁と解決策
+- **Tampermonkey の仕様**:
+  - Tampermonkey はスクリプトマネージャであり、`.css` や `/* ==UserStyle== */` の**プレーンCSSファイルを直接読み込む機能はありません**。
+  - Tampermonkey でスタイルを適用する場合は、ユーザースクリプト (`.js`) 内で `GM_addStyle` や `<style>` 要素の挿入を行う必要があります。
+- **Safari Userscripts (`quoid/userscripts`) の仕様**:
+  - 過去に独自の `/* ==UserStyle== */` をサポートしていましたが、公式開発において非推奨・廃止傾向にあり、作者（quoid氏）自身が**「`==UserStyle==` ではなく、標準ユーザースクリプトとして `GM.addStyle(css)` / `GM_addStyle(css)` を使うこと」を公式に推奨**しています。
+- **💡 互換性のベストプラクティス**:
+  - **【両環境完全互換（推奨）】**: スタイル適用であっても、**JavaScript 形式（`GM_addStyle` またはフォールバック付きスタイル注入）で記述した `.js`** を生成する。これにより Tampermonkey と Safari Userscripts の両方で100%同一コードで動作します。
+  - **【Safari Userscripts 専用】**: ユーザーが単体の `.css` ファイルとしての出力を希望した場合のみ、Safari Userscripts 専用の `/* ==UserStyle== */` 形式で出力する（Tampermonkey では動作しない旨を明記）。
+
+### 2. URL マッチング仕様
+- **`@match` の統一使用**:
+  - Safari Userscripts では `@include` や `@exclude` は非推奨（Deprecated）化されており、`@match` および `@exclude-match` のみが正式サポートされています。
+  - スキームは `http://` または `https://`（あるいはワイルドカード `*://`）のみ使用可能です。
+- **`@namespace`**:
+  - Tampermonkey ではスクリプトの一意性識別のために推奨されます。Safari Userscripts では無視されますが、害はないため常に記述します。
+
+### 3. `@name` の命名規則
+- Safari Userscripts では `@name` がそのまま**ファイル名および UI 表示名**として使用されます。
+- ファイルシステムで不正となる文字（`/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`）は絶対に含めず、**英数字・ハイフン・アンダースコア・半角空白**を基本としてください。
 
 ---
 
-### 2. メタデータ生成仕様
+## 📐 スクリプト & スタイル実装規範・メタデータ生成仕様
 
-#### ■ JavaScript の場合（Tampermonkey / Safari 両対応）
-Safari版では `@name` がファイル名・UI表示名になるため、**わかりやすく一意な英数字ベースの名前**にしてください。
+### 1. JavaScript (DOM操作・機能拡張)
+- **グローバル汚染防止**: 即時実行関数式（IIFE）かつ `'use strict';` で記述。
+- **遅延ロード / SPA 対応**:
+  - 対象要素が即座に存在しない場合に備え、`MutationObserver` または `document.readyState` 待機処理を組み込む。
+- **権限設定**:
+  - 特殊API（GM_*）を使用しない場合は `@grant none` を明記してサンドボックスオーバーヘッドを回避。
 
 ```javascript
 // ==UserScript==
@@ -69,31 +87,86 @@ Safari版では `@name` がファイル名・UI表示名になるため、**わ�
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  [スクリプトの説明]
-// @match        [対象サイトのURLパターン（http/httpsのみ）]
-// @grant        none （※必要に応じてAPIを指定）
+// @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @grant        none
 // @run-at       document-end
 // ==/UserScript==
 
 (function() {
     'use strict';
-    // ここに処理を記述
+
+    // 遅延ロード対応の要素監視例
+    const observer = new MutationObserver(() => {
+        const target = document.querySelector('.target-selector');
+        if (target) {
+            // 処理実行
+            observer.disconnect();
+        }
+    });
+
+    observer.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true
+    });
 })();
 ```
 
-#### ■ CSS の場合（Safari Userscripts専用 / .user.css）
-Safari版 (`quoid/userscripts`) の仕様に基づき、**ブロックコメント形式**で出力します。
+---
+
+### 2. カスタムスタイル (両環境完全互換形式: JavaScript + GM_addStyle) 【推奨】
+Tampermonkey と Safari Userscripts の両方で確実にスタイルを適用するための完全互換形式です。
+
+```javascript
+// ==UserScript==
+// @name         [スタイル名（英数字推奨）]
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  [スタイルの説明]
+// @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @grant        GM_addStyle
+// @run-at       document-start
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    const css = `
+        .unwanted-element {
+            display: none !important;
+        }
+    `;
+
+    // GM_addStyle または DOM注入のフォールバック
+    if (typeof GM_addStyle !== 'undefined') {
+        GM_addStyle(css);
+    } else {
+        const style = document.createElement('style');
+        style.textContent = css;
+        (document.head || document.documentElement).appendChild(style);
+    }
+})();
+```
+
+---
+
+### 3. カスタムスタイル (Safari Userscripts 専用: .css / .user.css)
+Safari Userscripts の独自機能を利用した単体 CSS ファイルです（Tampermonkey では動作しません）。
+
 > [!WARNING]
-> **重要禁止事項**: `@run-at` や `@inject-into` は JavaScript 専用のメタデータです。**CSS (UserStyle) には絶対に含めないでください**（パースエラーや不正動作の原因となります）。
+> - `@run-at` や `@inject-into` は JavaScript 専用メタデータです。**CSS には絶対に含めないでください**。
+> - `@include` は非推奨です。必ず **`@match`** を使用してください。
 
 ```css
 /* ==UserStyle==
 @name          [スタイル名（英数字推奨）]
 @version       1.0
 @description   [スタイルの説明]
-@match         [対象サイトのURLパターン（http/httpsのみ）]
+@match         https://example.com/*
 ==/UserStyle== */
 
-/* ここにCSSを記述 */
+.unwanted-element {
+    display: none !important;
+}
 ```
 
 ---
