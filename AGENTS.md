@@ -4,12 +4,16 @@
 
 ---
 
-## 🎯 プロジェクト概要 & 技術スタック
+## 🎯 プロジェクト概要 & AI エージェントの役割
 - **プロジェクト名**: Userscripts (Safari iOS/macOS ユーザースクリプト & スタイル集)
+- **対象プラットフォーム**:
+  - Safari 拡張機能「Userscripts」(iOS / iPadOS / macOS - [quoid/userscripts](https://github.com/quoid/userscripts))
+  - Tampermonkey（Chrome / Safari 両対応基準）
 - **主言語 / ランタイム**: JavaScript (ES2020+), CSS (CSS3), Node.js v23+
-- **プラットフォーム**: Safari 拡張機能「Userscripts」(iOS / iPadOS / macOS)
-- **主要な責務**:
-  - iOS/macOS の Safari 上で各種 Web サイト（X, Instagram, YouTube, 音泉, ファンクラブサイト等）の不要要素非表示、UI 改善、自動ログイン、操作支援を提供する。
+- **AI エージェントの責務**:
+  - Tampermonkey および Safari Userscripts 向けのユーザースクリプト（JS）とカスタムスタイル（CSS）を作成・保守する専門アシスタントです。
+  - ユーザーから「対象のサイト」「やりたいこと」「言語（JSまたはCSS）」の要件を受け取り、公式仕様に完全に準拠したメタデータと本体コードを生成・更新します。
+  - ユーザーへの挨拶や余分な解説は最小限に留め、正確でそのまま実用可能なコードの出力を最優先します。
 
 ---
 
@@ -23,6 +27,7 @@
   ├── .git (テキストファイル: gitdir: /Users/user/_Costom_Local_User_Folder/_Antigravity/userscripts.git を指す)
   ├── .gitignore
   ├── AGENTS.md
+  ├── README.md
   └── *.js, *.css (スクリプト本体群)
 
 [ローカルストレージ (Git管理領域 / 実体)]
@@ -40,43 +45,55 @@
 
 ---
 
-## 📐 スクリプト & スタイル記述規約
+## 📐 スクリプト & スタイル実装規範・メタデータ生成仕様
 
-すべてのファイルは、Safari 拡張「Userscripts」が正しくメタデータを読み取れるよう、以下の形式を厳守してください。
+### 1. 実装・コーディング規範
+- **JavaScript (DOM操作)**:
+  - SPA（Single Page Application）や要素の遅延ロードを考慮し、対象要素が初期描画時に存在しない場合でも確実に動作するよう、必要に応じて `MutationObserver` や適切な待機処理（リトライ・要素監視）を組み込んでください。
+  - グローバルスコープ汚染を防ぐため、全体を即時実行関数式（IIFE）かつ `'use strict';` で記述してください。
+- **CSS (スタイル上書き)**:
+  - 既存 Web サイトのスタイル詳細度（Specificity）に負けないよう、必要に応じて `!important` を適切に使用してください。
+- **出力ルール**:
+  - コードを出力・提示する際は、必ず対応する言語のコードブロック（`javascript` または `css`）で囲んでください。
 
-### 1. Userscript (`.js`)
-- 必ず先頭に `==UserScript==` メタデータブロックを記述する。
-- グローバルスコープ汚染を防ぐため、全体を即時関数（IIFE）かつ `'use strict';` で記述する。
+---
+
+### 2. メタデータ生成仕様
+
+#### ■ JavaScript の場合（Tampermonkey / Safari 両対応）
+Safari版では `@name` がファイル名・UI表示名になるため、**わかりやすく一意な英数字ベースの名前**にしてください。
 
 ```javascript
 // ==UserScript==
-// @name         スクリプトの名称
-// @match        https://example.com/*
-// @run-at       document-idle
-// @grant        none
+// @name         [スクリプト名（英数字推奨）]
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  [スクリプトの説明]
+// @match        [対象サイトのURLパターン（http/httpsのみ）]
+// @grant        none （※必要に応じてAPIを指定）
+// @run-at       document-end
 // ==/UserScript==
 
-(function () {
-  'use strict';
-
-  // 処理本体
+(function() {
+    'use strict';
+    // ここに処理を記述
 })();
 ```
 
-### 2. UserStyle (`.css`)
-- 必ず先頭に `==UserStyle==` メタデータブロックを記述する。
+#### ■ CSS の場合（Safari Userscripts専用 / .user.css）
+Safari版 (`quoid/userscripts`) の仕様に基づき、**ブロックコメント形式**で出力します。
+> [!WARNING]
+> **重要禁止事項**: `@run-at` や `@inject-into` は JavaScript 専用のメタデータです。**CSS (UserStyle) には絶対に含めないでください**（パースエラーや不正動作の原因となります）。
 
 ```css
 /* ==UserStyle==
-@name           スタイルの名称
-@version        1.0
-@description    スタイルの説明
-@match          https://example.com/*
+@name          [スタイル名（英数字推奨）]
+@version       1.0
+@description   [スタイルの説明]
+@match         [対象サイトのURLパターン（http/httpsのみ）]
 ==/UserStyle== */
 
-.unwanted-element {
-    display: none !important;
-}
+/* ここにCSSを記述 */
 ```
 
 ---
@@ -94,7 +111,7 @@
 
 - **プレフィックス (`type`)**:
   - `feature/`: 新規スクリプト・スタイル追加、機能拡張
-  - `fix/`: セレクタ変更対応、不具合修正
+  - `fix/`: セレクタ変更対応、不具合修正、DOM遅延対応
   - `refactor/`: リファクタリング
   - `test/`: 検査コマンド・テスト追加
   - `chore/`: 設定ファイル・`.gitignore` 更新
@@ -118,7 +135,7 @@ AI エージェントは、ユーザーからタスクを指示された際、�
    ```
 3. **Implementation (実装)**:
    - 既存機能を破壊しないよう慎重に実装する。
-   - ヘッダーメタデータ（`@name`, `@match` 等）を正確に記載する。
+   - 上記のメタデータ仕様（`@name`, `@match` 等）および実装規範（遅延ロード、詳細度）を厳守する。
 4. **Quality Gate (自動検査)**:
    - **コミット前に必ず後述の自動検査コマンドを全件パス**させる。
    ```bash
@@ -151,6 +168,7 @@ node --check *.js
 スクリプトにヘッダーが欠落していないか確認します。
 - `.js` ファイル: `grep -L "==UserScript==" *.js` の出力が空であること
 - `.css` ファイル: `grep -L "==UserStyle==" *.css` の出力が空であること
+- CSS専用検査: `grep -E "@run-at|@inject-into" *.css` の出力が空であること（CSSへのJS用メタデータ混入防止）
 
 ---
 
