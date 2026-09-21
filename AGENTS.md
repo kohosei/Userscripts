@@ -1,6 +1,7 @@
 # 🤖 AI Agent Guidelines & Development Manual for Userscripts
 
-このドキュメントは、本リポジトリで作業を行うすべての AI エージェントおよび開発者が遵守すべきルール、設計原則、テスト手順、運用フローを定義したマスターガイドです。
+このドキュメントは、本リポジトリで作業を行うすべての AI エージェントおよび開発者が遵守すべきマスターガイドです。
+今後の機能改修、バグ修正、新規スクリプト・スタイルの追加において、**一言一句の逸脱なく本プロトコルを遵守**してください。
 
 ---
 
@@ -9,16 +10,18 @@
 - **対象プラットフォーム**:
   - **Safari 拡張機能「Userscripts」** (iOS / iPadOS / macOS - [quoid/userscripts](https://github.com/quoid/userscripts))
   - **Tampermonkey** (Chrome / Safari / Firefox / Edge 等)
-- **主言語 / ランタイム**: JavaScript (ES2020+), CSS (CSS3), Node.js v23+
-- **AI エージェントの責務**:
-  - Tampermonkey および Safari Userscripts の**両環境で完全な互換性を持つ**ユーザースクリプト（JS）とカスタムスタイル（CSS/JS）を作成・保守する専門アシスタントです。
-  - ユーザーから「対象のサイト」「やりたいこと」「言語（JSまたはCSS）」の要件を受け取り、公式仕様に完全に準拠したメタデータと本体コードを生成・更新します。
-  - ユーザーへの挨拶や余分な解説は最小限に留め、正確でそのまま実用可能なコードの出力を最優先します。
+- **配信リポジトリ**: `https://github.com/kohosei/Userscripts` (Public)
+- **主言語 / ランタイム**: JavaScript (ES2020+), Node.js v23+
+- **AI エージェントの主要な責務**:
+  - Tampermonkey（Chrome）および Safari Userscripts（iOS / Mac）の**両環境で 100% 互換動作するスクリプト（`.js`）** を作成・保守する。
+  - スタイルシートも含め、すべて JavaScript（`GM_addStyle` 注入）形式で作成し、Stylus 等の別拡張機能に依存しない統一環境を維持する。
+  - スクリプト追加・変更時には、Tampermonkey の自動更新（`@version`, `@updateURL`）および `README.md` カタログの整合性を自動で担保する。
 
 ---
 
-## ⚠️ リポジトリ構造と特殊運用ルール (CRITICAL)
+## ⚠️ リポジトリ構造と特殊運用制約 (CRITICAL)
 
+### 1. 分離 Git 管理 (`--separate-git-dir`)
 本リポジトリは、**「iOS 端末への iCloud リアルタイム同期」** と **「破損リスクのない堅牢な Git バージョン管理」** を両立するため、Git 標準の `--separate-git-dir` 方式を採用しています。
 
 ```
@@ -28,220 +31,214 @@
   ├── .gitignore
   ├── AGENTS.md
   ├── README.md
-  └── *.js, *.css (スクリプト本体群)
+  └── *.js (スクリプト本体群: 全て .js に一本化)
 
 [ローカルストレージ (Git管理領域 / 実体)]
 /Users/user/_Costom_Local_User_Folder/_Antigravity/userscripts.git/
   └── (HEAD, refs, objects, index などのGit実体)
 ```
 
-### AI エージェントが厳守すべき制約
-1. **`.git` ポインタファイルの保護**:
-   - ワークツリー直下の `.git` はフォルダではなく、ローカル Git ディレクトリへのパスが書かれたテキストファイルです。絶対に削除・上書きしないでください。
-2. **iCloud 即時反映への配慮**:
-   - ワークツリー内のファイルを保存・編集すると、iCloud Drive を経由して**数秒以内にユーザーの iOS 端末（Safari）へ同期**されます。
-   - そのため、構文エラーを含む壊れた状態のファイルを放置しないでください。
-   - トピックブランチで作業する際も、ワークツリーが切り替われば iOS 端末側にも反映されるため、作業中であっても構文整合性を維持してください。
+- **`.git` ポインタファイルの保護**:
+  - ワークツリー直下の `.git` はテキストファイルです。絶対に削除・上書きしないでください。
+- **iCloud 即時反映への配慮**:
+  - ワークツリー内のファイルを保存・編集すると、数秒以内にユーザーの iOS 端末（Safari）へ同期されます。
+  - そのため、**構文エラーを含む壊れた状態のファイルを放置しないでください**。
+
+### 2. macOS CommandLineTools Git の優先使用
+macOS 環境では Xcode ライセンスプロンプトによる対話停止を防ぐため、Git コマンドを実行する際は必ず CommandLineTools パスを優先してください：
+```bash
+export PATH="/Library/Developer/CommandLineTools/usr/bin:$PATH"
+```
 
 ---
 
-## 🔬 両プラットフォームの最新仕様 & 互換性の検証知見
+## 📐 スクリプト実装仕様 & 必須メタデータヘッダー
 
-Tampermonkey および Safari Userscripts (`quoid/userscripts`) の公式最新ドキュメントに基づく重要仕様です。
+すべてのスクリプトは拡張子 **`.js`** で作成します（プレーンな `.css` ファイルの新規作成は禁止です）。
 
-### 1. CSS（スタイルシート）の互換性の壁と解決策
-- **Tampermonkey の仕様**:
-  - Tampermonkey はスクリプトマネージャであり、`.css` や `/* ==UserStyle== */` の**プレーンCSSファイルを直接読み込む機能はありません**。
-  - Tampermonkey でスタイルを適用する場合は、ユーザースクリプト (`.js`) 内で `GM_addStyle` や `<style>` 要素の挿入を行う必要があります。
-- **Safari Userscripts (`quoid/userscripts`) の仕様**:
-  - 過去に独自の `/* ==UserStyle== */` をサポートしていましたが、公式開発において非推奨・廃止傾向にあり、作者（quoid氏）自身が**「`==UserStyle==` ではなく、標準ユーザースクリプトとして `GM.addStyle(css)` / `GM_addStyle(css)` を使うこと」を公式に推奨**しています。
-- **💡 互換性のベストプラクティス**:
-  - **【両環境完全互換（推奨）】**: スタイル適用であっても、**JavaScript 形式（`GM_addStyle` またはフォールバック付きスタイル注入）で記述した `.js`** を生成する。これにより Tampermonkey と Safari Userscripts の両方で100%同一コードで動作します。
-  - **【Safari Userscripts 専用】**: ユーザーが単体の `.css` ファイルとしての出力を希望した場合のみ、Safari Userscripts 専用の `/* ==UserStyle== */` 形式で出力する（Tampermonkey では動作しない旨を明記）。
+### 1. メタデータヘッダー必須項目（全スクリプト共通）
+Tampermonkey の自動更新および Safari Userscripts との完全互換のため、以下のメタデータが必須です。
 
-### 2. URL マッチング仕様
-- **`@match` の統一使用**:
-  - Safari Userscripts では `@include` や `@exclude` は非推奨（Deprecated）化されており、`@match` および `@exclude-match` のみが正式サポートされています。
-  - スキームは `http://` または `https://`（あるいはワイルドカード `*://`）のみ使用可能です。
-- **`@namespace`**:
-  - Tampermonkey ではスクリプトの一意性識別のために推奨されます。Safari Userscripts では無視されますが、害はないため常に記述します。
-
-### 3. `@name` の命名規則
-- Safari Userscripts では `@name` がそのまま**ファイル名および UI 表示名**として使用されます。
-- ファイルシステムで不正となる文字（`/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`）は絶対に含めず、**英数字・ハイフン・アンダースコア・半角空白**を基本としてください。
+| キー | 必須 | 設定内容・規則 |
+| :--- | :---: | :--- |
+| `// ==UserScript==` | 必須 | ヘッダー開始マーカー |
+| `@name` | 必須 | スクリプトの表示名（英数字・記号・日本語可。ファイルシステム禁止文字 `/ \ : * ? " < > \|` は不可） |
+| `@namespace` | 必須 | `http://tampermonkey.net/` |
+| `@version` | 必須 | バージョン番号（例: `1.0`, `1.1`, `1.2.1`）。**改修時は必ず数値を繰り上げること** |
+| `@description` | 必須 | スクリプトの役割を簡潔に記載 |
+| `@match` | 必須 | 対象 URL パターン（`@include` は非推奨のため使用禁止。`https://example.com/*` 等） |
+| `@updateURL` | 必須 | `https://raw.githubusercontent.com/kohosei/Userscripts/main/<ファイル名>.js` |
+| `@downloadURL` | 必須 | `https://raw.githubusercontent.com/kohosei/Userscripts/main/<ファイル名>.js` |
+| `@grant` | 必須 | 特殊権限。DOM操作のみは `none`、スタイル注入は `GM_addStyle` |
+| `@run-at` | 必須 | 実行タイミング（DOM操作は `document-end` または `document-idle`、スタイルは `document-start`） |
+| `// ==/UserScript==` | 必須 | ヘッダー終了マーカー |
 
 ---
 
-## 📐 スクリプト & スタイル実装規範・メタデータ生成仕様
-
-### 1. JavaScript (DOM操作・機能拡張)
-- **グローバル汚染防止**: 即時実行関数式（IIFE）かつ `'use strict';` で記述。
-- **遅延ロード / SPA 対応**:
-  - 対象要素が即座に存在しない場合に備え、`MutationObserver` または `document.readyState` 待機処理を組み込む。
-- **権限設定**:
-  - 特殊API（GM_*）を使用しない場合は `@grant none` を明記してサンドボックスオーバーヘッドを回避。
+### 2. テンプレート A: 機能拡張・DOM操作スクリプト
+- グローバル汚染を防ぐため即時実行関数式（IIFE）かつ `'use strict';` で記述。
+- SPA や遅延ロード要素に対応するため `MutationObserver` を組み込む。
 
 ```javascript
 // ==UserScript==
-// @name         [スクリプト名（英数字推奨）]
+// @name         スクリプト名
 // @namespace    http://tampermonkey.net/
 // @version      1.0
-// @description  [スクリプトの説明]
-// @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @description  スクリプトの説明
+// @match        https://example.com/*
 // @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @grant        none
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    // 遅延ロード対応の要素監視例
-    const observer = new MutationObserver(() => {
-        const target = document.querySelector('.target-selector');
-        if (target) {
-            // 処理実行
-            observer.disconnect();
-        }
-    });
+  // 遅延ロード・SPA対応の監視
+  const observer = new MutationObserver(() => {
+    const target = document.querySelector('.target-selector');
+    if (target) {
+      // 処理を実行
+      observer.disconnect();
+    }
+  });
 
+  if (document.body || document.documentElement) {
     observer.observe(document.body || document.documentElement, {
-        childList: true,
-        subtree: true
+      childList: true,
+      subtree: true
     });
+  }
 })();
 ```
 
 ---
 
-### 2. カスタムスタイル (両環境完全互換形式: JavaScript + GM_addStyle) 【推奨】
-Tampermonkey と Safari Userscripts の両方で確実にスタイルを適用するための完全互換形式です。
+### 3. テンプレート B: カスタムスタイルスクリプト (Stylus 代替 / GM_addStyle)
+- スタイルはすべてこの形式で作成します。
+- `@run-at document-start` で DOM 生成直後に注入し、スタイルのチラつき（FOUC）を完全に防止します。
+- `GM_addStyle` が未定義の環境（一部サンドボックス外）でも確実に動作するようフォールバック処理を同梱します。
 
 ```javascript
 // ==UserScript==
-// @name         [スタイル名（英数字推奨）]
+// @name         スタイル名
 // @namespace    http://tampermonkey.net/
 // @version      1.0
-// @description  [スタイルの説明]
-// @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @description  スタイルの説明
+// @match        https://example.com/*
 // @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @grant        GM_addStyle
 // @run-at       document-start
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    const css = `
-        .unwanted-element {
-            display: none !important;
-        }
-    `;
-
-    // GM_addStyle または DOM注入のフォールバック
-    if (typeof GM_addStyle !== 'undefined') {
-        GM_addStyle(css);
-    } else {
-        const style = document.createElement('style');
-        style.textContent = css;
-        (document.head || document.documentElement).appendChild(style);
+  const css = `
+    .unwanted-element {
+      display: none !important;
     }
+  `;
+
+  if (typeof GM_addStyle !== 'undefined') {
+    GM_addStyle(css);
+  } else {
+    const style = document.createElement('style');
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+  }
 })();
 ```
 
 ---
 
-### 3. スタイルスクリプトの完全一本化運用ルール
-Tampermonkey（Chrome）と Safari Userscripts（iOS / Mac）のクロスプラットフォーム自動更新・即時反映を実現するため、**すべてのスタイルは上記「2. カスタムスタイル (両環境完全互換形式: JavaScript + GM_addStyle)」に一本化**して作成・管理します。単体のプレーン `.css`（UserStyle）ファイルは原則として使用しません。
+## 🤖 AI エージェント自律開発プロトコル (Autonomous Protocol)
 
----
+ユーザーからタスクを指示された際、AI エージェントは以下のチェックリストを順次実行してください。
 
-## 🌳 Git ブランチ戦略 & 運用プロトコル (Modified Git-flow)
-
-本リポジトリでは安全な自動開発のため **Modified Git-flow** を採用します。
-
-### 1. ブランチ役割
-| ブランチ | 役割 | 直接コミット | マージ元 | マージ方法 |
-| :--- | :--- | :---: | :--- | :--- |
-| `main` | 安定版（iOS 端末で安定稼働する確定コード） | ❌ 禁止 | `develop` | `--no-ff` |
-| `develop` | 開発統合ブランチ（常時構文検査通過状態） | ❌ 禁止 | トピックブランチ | `--no-ff` |
-| `<type>/*` | 個別作業トピックブランチ | ⭕ 可 | `develop` | - |
-
-- **プレフィックス (`type`)**:
-  - `feature/`: 新規スクリプト・スタイル追加、機能拡張
-  - `fix/`: セレクタ変更対応、不具合修正、DOM遅延対応
-  - `refactor/`: リファクタリング
-  - `test/`: 検査コマンド・テスト追加
-  - `chore/`: 設定ファイル・`.gitignore` 更新
-  - `docs/`: ドキュメント・スクリプトカタログ更新
-
----
-
-### 2. 🤖 AI エージェント自律開発手順 (Autonomous Protocol)
-
-AI エージェントは、ユーザーからタスクを指示された際、以下のステップを順次実行してください。
-
-1. **Pre-flight (作業前確認)**:
+### 【ケース 1: 既存スクリプトを修正・改善する場合】
+1. **Pre-flight**:
    ```bash
+   export PATH="/Library/Developer/CommandLineTools/usr/bin:$PATH"
    git status --porcelain
-   # 作業ツリーが clean であることを確認
-   git checkout develop
+   git checkout develop && git pull origin develop
    ```
-2. **Branch (トピックブランチ作成)**:
+2. **Branch**:
    ```bash
-   git checkout -b <type>/<kebab-case-name>
+   git checkout -b fix/<script-name>-<short-description>
    ```
-3. **Implementation (実装)**:
-   - 既存機能を破壊しないよう慎重に実装する。
-   - 上記のメタデータ仕様（`@name`, `@match` 等）および実装規範（遅延ロード、詳細度）を厳守する。
-4. **Quality Gate (自動検査)**:
-   - **コミット前に必ず後述の自動検査コマンドを全件パス**させる。
-   ```bash
-   node --check *.js
-   ```
-5. **Integrate (コミット & マージ)**:
+3. **Implementation**:
+   - 既存の動作を壊さないよう修正。
+   - 🚨 **最重要義務: `@version` を必ずインクリメントすること！**
+     - 例: `1.0` → `1.1`、`1.2.1` → `1.2.2`
+     - 数値を繰り上げないと、Tampermonkey が変更を検知できず他端末に自動配信されません。
+4. **Quality Gate**: 自動検査を全件パスさせる（後述）。
+5. **Integrate**:
    ```bash
    git add .
-   git commit -m "<type>(<scope>): <変更内容の要約>"
+   git commit -m "fix(<scope>): <変更内容の要約>"
    git checkout develop
-   git merge --no-ff <type>/<kebab-case-name> -m "Merge branch '<type>/<kebab-case-name>' into develop"
-   git branch -d <type>/<kebab-case-name>
+   git merge --no-ff fix/<script-name>-<short-description> -m "Merge branch 'fix/...' into develop"
+   git branch -d fix/<script-name>-<short-description>
    ```
-   ※本番反映（`main` へのマージ）は、ユーザーの指示またはリリース判断時に `--no-ff` でマージします。
+6. **Release (main マージ & push)**:
+   - ユーザーから指示された場合、または作業完了の区切りで必ず `main` にマージして push します（Tampermonkey の参照先が `main` のため）。
+   ```bash
+   git checkout main
+   git merge --no-ff develop -m "release: update <script-name>"
+   git checkout develop
+   git push origin develop main
+   ```
+
+---
+
+### 【ケース 2: 新規スクリプトを追加する場合】
+1. **Pre-flight & Branch**:
+   - `git checkout -b feature/add-<script-name>`
+2. **Implementation**:
+   - 上記テンプレート A または B に従ってファイルを作成（拡張子 `.js`）。
+   - メタデータ（`@name`, `@version 1.0`, `@match`, `@updateURL`, `@downloadURL`, `@grant`, `@run-at`）を漏れなく記述。
+3. **README.md カタログへの追記 (必須)**:
+   - `README.md` の該当テーブルに新スクリプトの情報を 1 行追加する。
+   - カラム: `ファイル名`, `名称 (@name)`, `対象サイト (@match)`, `[Raw Link](...)`, `概要`
+4. **Quality Gate**: 自動検査を全件パス。
+5. **Integrate & Release**:
+   - `develop` にマージ後、`main` に `--no-ff` マージして push。
 
 ---
 
 ## 🛡️ 品質ゲート (Quality Gate) & 自動検査コマンド
 
-コミット前に必ず以下のコマンドを実行し、エラーがゼロであることを確認してください。
+**コミット前に必ず以下のコマンドを実行し、全項目が OK であることを確認してください。**  
+1 つでもエラーがある場合、コミットは禁止です。
 
-### 1. JavaScript 構文検査
-リポジトリ内の全 `.js` ファイルに対して Node.js の組み込み構文チェッカーを実行します。
+### 検査ワンライナー（コピペ用）
 ```bash
-node --check *.js
+node --check *.js && \
+test -z "$(grep -L "==UserScript==" *.js)" && echo "✅ UserScript headers: OK" && \
+test -z "$(grep -L "@updateURL" *.js)" && echo "✅ updateURL headers: OK" && \
+test -z "$(grep -L "@version" *.js)" && echo "✅ version headers: OK" && \
+echo "🎉 ALL QUALITY GATES PASSED!"
 ```
-*(エラーが発生した場合は該当ファイルの行番号とシンタックスエラーを修正するまでコミット禁止)*
 
-### 2. メタデータヘッダー検査
-スクリプトにヘッダーが欠落していないか確認します。
-- `.js` ファイル:
-  - `grep -L "==UserScript==" *.js` の出力が空であること
-  - `grep -L "@updateURL" *.js` の出力が空であること（Tampermonkey 自動更新 URL の設定漏れ防止）
-  - `grep -L "@version" *.js` の出力が空であること（Tampermonkey の更新検知用バージョンの設定漏れ防止）
-
-### 3. バージョン更新（Version Bump）の原則
-Tampermonkey は `@version` の数値が上がったことを検知して自動更新を実行します。
-スクリプトの改修・バグ修正を行った際は、**必ず `@version` をインクリメント** してください（例: `1.0` → `1.1`、`1.2.1` → `1.2.2`）。
+### 個別検査項目
+1. **JavaScript 構文検査**: `node --check *.js` で全ファイルに構文エラーがないこと。
+2. **ヘッダー必須項目検査**:
+   - `grep -L "==UserScript==" *.js` の出力が空であること
+   - `grep -L "@updateURL" *.js` の出力が空であること（Tampermonkey 自動更新 URL 漏れ防止）
+   - `grep -L "@version" *.js` の出力が空であること（更新検知漏れ防止）
+3. **プレーン CSS の混入防止**: リポジトリ直下に単体の `.css` ファイルが存在しないこと（すべて `.js` に一本化）。
 
 ---
 
-## 📚 ドキュメント & スクリプト管理
+## 📚 ドキュメント管理義務
 
-### 管理場所
-- `AGENTS.md`: 本ガイド（開発・運用マニュアル）
-- `README.md`: スクリプト一覧・対象サイト・役割のカタログ
-
-### スクリプト追加・変更時の義務
-新しいスクリプトやスタイルを追加、またはセレクタ変更等の大幅な仕様変更を行った場合は、`README.md` のカタログにも反映してください。
+- **`README.md`**:
+  - 人間・ユーザー向けの表紙およびカタログ。
+  - スクリプトの新規追加・削除・対象サイト変更時は、**必ずカタログテーブルを同期更新**してください。
+- **`AGENTS.md`**:
+  - 本ガイド。設計原則、自動検査ルール、プロトコルの改定時に更新します。
+- **`CLAUDE.md`**:
+  - `@AGENTS.md` への参照を保持します。
