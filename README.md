@@ -1,7 +1,8 @@
 # 🌐 Userscripts & Custom Styles Repository
 
 [![Userscripts](https://img.shields.io/badge/Safari-Userscripts-blue.svg?logo=safari&logoColor=white)](https://apps.apple.com/app/userscripts/id1463298887)
-[![Tampermonkey](https://img.shields.io/badge/Chrome-Tampermonkey-black.svg?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+[![Tampermonkey (Chrome)](https://img.shields.io/badge/Chrome-Tampermonkey-black.svg?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+[![Tampermonkey (Firefox)](https://img.shields.io/badge/Firefox-Tampermonkey-orange.svg?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/firefox/addon/tampermonkey/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](#)
 
@@ -11,7 +12,7 @@ iOS / iPadOS / macOS の Safari 拡張機能 **「Userscripts」** および 全
 
 ## 🌟 自動同期・配信アーキテクチャ
 
-本リポジトリは、**「iOS 端末への iCloud リアルタイム同期」** と **「全 PC の Chrome/Tampermonkey への GitHub 自動配信」** を両立するシームレスな同期基盤を備えています。
+本リポジトリは、**「iOS 端末への iCloud リアルタイム同期」** と **「全 PC のブラウザ（Chrome / Firefox 等の Tampermonkey）への GitHub 自動配信」** を両立するシームレスな同期基盤を備えています。
 
 ```mermaid
 flowchart TD
@@ -24,10 +25,10 @@ flowchart TD
         iOS["📱 iPhone / iPad / Mac Safari (即座に自動反映)"]
     end
 
-    subgraph ChromeSync["🌐 全プラットフォーム (Chrome Tampermonkey)"]
+    subgraph BrowserSync["🌐 全プラットフォーム (Chrome / Firefox 等 Tampermonkey)"]
         Git["🐙 Git Push (main ブランチ)"]
         GitHub["🐙 GitHub Raw (CDN)"]
-        Tampermonkey["💻 全 PC の Chrome (定期自動チェック & 更新)"]
+        Tampermonkey["💻 各 PC の Chrome / Firefox 等 (定期自動チェック & 更新)"]
     end
 
     Script -->|即時ファイル同期| iCloud
@@ -50,7 +51,7 @@ flowchart TD
 ## 📁 スクリプトカタログ
 
 全スクリプトに Tampermonkey 自動更新用メタデータ（`@updateURL` / `@downloadURL`）が付与されています。  
-Chrome で表内の **「インストール (Raw Link)」** を開くと、Tampermonkey のインストール画面が自動起動します。
+Chrome や Firefox などの Tampermonkey を導入したブラウザで表内の **「インストール (Raw Link)」** を開くと、Tampermonkey のインストール画面が自動起動します。
 
 ### 📜 機能拡張・自動化スクリプト (`.js`)
 
@@ -99,8 +100,11 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
 4. これで完了です。Mac で編集するたびに、iOS 端末へ即時同期されます。
    *(※iOS 18 / macOS 15 以降では、ファイルがローカルから退避されないよう「ダウンロードしたままにする」設定を推奨)*
 
-### 2. Chrome での利用 (Tampermonkey)
-1. Chrome ウェブストアから **[Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)** をインストール。
+### 2. PC ブラウザ（Chrome / Firefox 等）での利用 (Tampermonkey)
+1. 各ブラウザの拡張機能ストアから **[Tampermonkey](https://www.tampermonkey.net/)** をインストール。
+   - **Chrome**: [Chrome ウェブストア](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+   - **Firefox**: [Firefox Add-ons (AMO)](https://addons.mozilla.org/firefox/addon/tampermonkey/)
+   - *(Safari / Edge 等でも同様に Tampermonkey 拡張機能を利用可能です)*
 2. **初回の一括インストール**:
    - 上記カタログから個別にクリックしてインストールするか、
    - Tampermonkey ダッシュボードの「ユーティリティ」>「ファイルからインポート」から、リポジトリ内（またはダウンロードした）スクリプト群を一括インポートします。
@@ -125,7 +129,7 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
    - スクリプト内の不具合修正やセレクタ更新を行います。
    - > [!IMPORTANT]
      > **必ずヘッダーの `@version` をインクリメントしてください**（例: `1.0` → `1.1`、`1.2.1` → `1.2.2`）。  
-     > Tampermonkey は `@version` の数値が上がったことを検知して自動更新を実行します。数値を上げ忘れると Chrome 側に自動反映されません。
+     > Tampermonkey は `@version` の数値が上がったことを検知して自動更新を実行します。数値を上げ忘れると Chrome / Firefox 等のブラウザ側に自動反映されません。
 3. **品質検査**:
    ```bash
    node --check *.js
@@ -146,7 +150,7 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
    git push origin develop main
    ```
    > [!TIP]
-   > `main` に push された時点で、全端末の Chrome / Tampermonkey へ自動配信がスタンバイされます。
+   > `main` に push された時点で、全端末の Chrome / Firefox 等の Tampermonkey へ自動配信がスタンバイされます。
 
 ---
 
@@ -219,8 +223,8 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
    ```
 5. **コミット & develop 統合 & main リリース**:
    - パターン 1 と同様に `develop` にマージ後、`main` にマージして push します。
-6. **Chrome Tampermonkey への初回登録**:
-   - 新規スクリプトの場合のみ、Chrome 側で README 内の [Raw Link] を 1 回クリックしてインストールします。
+6. **Tampermonkey (Chrome / Firefox 等) への初回登録**:
+   - 新規スクリプトの場合のみ、ブラウザ（Chrome / Firefox 等）側で README 内の [Raw Link] を 1 回クリックしてインストールします。
 
 ---
 
@@ -229,7 +233,7 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
 | 症状 | 原因 | 対処法 |
 | :--- | :--- | :--- |
 | **iOS Safari で変更が反映されない** | iCloud 同期の待機中、またはファイルがローカルから退避されている | 「ファイル」アプリで Userscripts フォルダを開き、雲マーク（未ダウンロード）になっていないか確認し「ダウンロードを保持」を設定してください。 |
-| **Chrome Tampermonkey で更新が降ってこない** | 1. `@version` が更新されていない<br>2. `main` ブランチに push されていない<br>3. Tampermonkey の定期チェック待機中 | 1. スクリプト内の `@version` を繰り上げてください。<br>2. `main` ブランチへ push されているか確認してください。<br>3. Tampermonkey アイコン > **「スクリプトの更新を確認」** を手動実行してください。 |
+| **Tampermonkey (Chrome / Firefox 等) で更新が降ってこない** | 1. `@version` が更新されていない<br>2. `main` ブランチに push されていない<br>3. Tampermonkey の定期チェック待機中 | 1. スクリプト内の `@version` を繰り上げてください。<br>2. `main` ブランチへ push されているか確認してください。<br>3. Tampermonkey アイコン > **「スクリプトの更新を確認」** を手動実行してください。 |
 | **CSS スタイルが反映されない / チラつく** | `@run-at` が指定されていない | メタデータに `// @run-at document-start` を指定してください。DOM 生成直後の最速タイミングで注入されます。 |
 
 ---
