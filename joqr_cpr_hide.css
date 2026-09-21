@@ -1,8 +1,0 @@
-/* ==UserStyle==
-@name JOQR Hide Copyright
-@include https://www.joqr.co.jp/ag/*
-==/UserStyle== */
-
-.c-copyright {
-    display: none !important;
-}

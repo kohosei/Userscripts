@@ -153,25 +153,8 @@ Tampermonkey と Safari Userscripts の両方で確実にスタイルを適用�
 
 ---
 
-### 3. カスタムスタイル (Safari Userscripts 専用: .css / .user.css)
-Safari Userscripts の独自機能を利用した単体 CSS ファイルです（Tampermonkey では動作しません）。
-
-> [!WARNING]
-> - `@run-at` や `@inject-into` は JavaScript 専用メタデータです。**CSS には絶対に含めないでください**。
-> - `@include` は非推奨です。必ず **`@match`** を使用してください。
-
-```css
-/* ==UserStyle==
-@name          [スタイル名（英数字推奨）]
-@version       1.0
-@description   [スタイルの説明]
-@match         https://example.com/*
-==/UserStyle== */
-
-.unwanted-element {
-    display: none !important;
-}
-```
+### 3. スタイルスクリプトの完全一本化運用ルール
+Tampermonkey（Chrome）と Safari Userscripts（iOS / Mac）のクロスプラットフォーム自動更新・即時反映を実現するため、**すべてのスタイルは上記「2. カスタムスタイル (両環境完全互換形式: JavaScript + GM_addStyle)」に一本化**して作成・管理します。単体のプレーン `.css`（UserStyle）ファイルは原則として使用しません。
 
 ---
 
@@ -247,9 +230,6 @@ node --check *.js
   - `grep -L "==UserScript==" *.js` の出力が空であること
   - `grep -L "@updateURL" *.js` の出力が空であること（Tampermonkey 自動更新 URL の設定漏れ防止）
   - `grep -L "@version" *.js` の出力が空であること（Tampermonkey の更新検知用バージョンの設定漏れ防止）
-- `.css` ファイル:
-  - `grep -L "==UserStyle==" *.css` の出力が空であること
-  - `grep -E "@run-at|@inject-into" *.css` の出力が空であること（CSSへのJS用メタデータ混入防止）
 
 ### 3. バージョン更新（Version Bump）の原則
 Tampermonkey は `@version` の数値が上がったことを検知して自動更新を実行します。

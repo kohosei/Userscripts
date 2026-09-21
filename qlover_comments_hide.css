@@ -1,8 +1,0 @@
-/* ==UserStyle==
-@name QloveR コメント非表示
-@include https://qlover.jp/*
-==/UserStyle== */
-
-.EnableCommentArea-chatContent {
-    display: none !important;
-}
