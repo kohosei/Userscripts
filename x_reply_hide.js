@@ -5,6 +5,8 @@
 // @description  x.comのツイート詳細ページでリプライ欄を非表示にする（投稿者自身のリプライは表示）
 // @match        https://x.com/*
 // @match        https://twitter.com/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/x_reply_hide.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/x_reply_hide.js
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==

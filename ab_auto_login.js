@@ -1,10 +1,11 @@
-
 // ==UserScript==
 // @name         plusmember apollobay auto login
 // @namespace    http://tampermonkey.net/
 // @version      1.1
 // @description  Apollo Bay ログイン画面での自動ログイン実行（iOS Safari AutoFillクラッシュ対応）
 // @match        https://secure.plusmember.jp/apollobay/*/login/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_auto_login.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_auto_login.js
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==

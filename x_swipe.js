@@ -6,6 +6,8 @@
 // @author       You
 // @match        https://x.com/*
 // @match        https://twitter.com/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/x_swipe.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/x_swipe.js
 // @noframes
 // @grant        none
 // @run-at       document-idle
