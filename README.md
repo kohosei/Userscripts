@@ -62,7 +62,7 @@ Chrome で表内の **「インストール (Raw Link)」** を開くと、Tampe
 | `onsen_order.js` | 音泉 お気に入り番組 並び替えトグル | `onsen.ag` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/onsen_order.js) | お気に入り番組の表示順（デフォルト / 更新順 / 逆順）をワンタップ切替 |
 | `ab_auto_login.js` | plusmember apollobay auto login | `secure.plusmember.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_auto_login.js) | Apollo Bay ログイン画面での自動ログイン実行 |
 | `ab_open_login_page.js` | apollobaycruiser auto open login | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_open_login_page.js) | 未ログイン状態を検知して自動でログインページへ遷移 |
-| `ab_disable_carousel.js` | Disable Carousel Autoplay | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js) | トップページのカルーセル自動スクロールを停止 |
+| `ab_disable_carousel.js` | Disable Carousel Autoplay | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js) | トップページのカルーセル自動スクロールを停止（ログイン後遷移・BFCache対応） |
 | `nagi_auto_login.js` | aoyamanagisa mypage auto login | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_auto_login.js) | マイページへのリダイレクトおよび自動ログイン |
 | `nagi_mypage_redirect.js` | aoyamanagisa mypage redirect | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_mypage_redirect.js) | ログインページ以外の特定画面からマイページへ自動転送 |
 
