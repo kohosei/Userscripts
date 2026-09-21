@@ -34,26 +34,24 @@ iOS / iPadOS / macOS の Safari 拡張機能 **「Userscripts」** および **T
 
 ---
 
-### 🎨 UserStyles (`.css`) - 要素非表示・デザイン調整
-| ファイル名 | 名称 (@name) | 対象サイト (@match / @include) | 概要 |
-| :--- | :--- | :--- | :--- |
-| `yt_comments_hide.css` | Hide comments on YouTube | `youtube.com` | YouTube 動画ページのコメント欄およびライブチャット欄を非表示 |
-| `qlover_comments_hide.css` | QloveR コメント非表示 | `qlover.jp` | 配信画面のチャット・コメント欄を非表示 |
-| `qlover_store_hide.css` | QloveR SmartBanner非表示 | `qlover.jp` | アプリインストール誘導バナー（SmartBanner）を非表示 |
-| `onsen_footer_hide.css` | Hide footer on onsen.ag | `onsen.ag` | 画面下部の不要なフッター領域を非表示 |
-| `joqr_cpr_hide.css` | JOQR Hide Copyright | `joqr.co.jp/ag` | 著作権表示フッターを非表示 |
-| `hibiki_news_hide.css` | Hide news-list on hibiki | `hibiki-radio.jp` | ニュース一覧セクションを非表示 |
-| `ab_comments_hide.css` | HideBlogComments | `apollobaycruiser.jp` | 会員限定ブログのコメント欄を非表示 |
-| `ab_notice_hide.css` | Hide sub-txt-list on apollo | `apollobaycruiser.jp` | サブテキスト一覧（お知らせ等）を非表示 |
-| `nagi_footer_hide.css` | Hide footer on aoyamanagisa | `aoyamanagisa.jp` | サイト下部フッターを非表示 |
-| `nagi_hide_title.css` | Hide title card on aoyamanagisa | `aoyamanagisa.jp` | タイムライン画面の巨大なタイトルカードを非表示 |
-| `liella_banner_hide.css` | Hide bnrlink on yuigaoka | `lovelive-anime.jp/yuigaoka` | ページ上部・下部の各種バナーリンクを非表示 |
-| `liellaclub_caption_footer_hide.css` | Hide elements on liellaclub | `lovelive-liellaclub.jp` | キャプションおよびフッターリンクを非表示 |
-| `lovelive_link_hide.css` | Hide link on lovelive | `lovelive-anime.jp` | SNS リンク等の導線を非表示 |
+### 🎨 UserStyles (`.js`) - 要素非表示・デザイン調整（両環境完全互換）
+すべてのスタイルは `GM_addStyle` 形式の JavaScript スクリプトとして実装されているため、**Stylus などの別拡張機能は不要**です。Safari Userscripts と Tampermonkey の双方で自動更新・適用されます。
 
-> [!TIP]
-> **今後のスタイル追加についての推奨**:
-> Tampermonkey はプレーン `.css` ファイルの直接読み込みに対応していません。今後スタイルを追加・更新する際は、両環境で 100% 互換動作する **JavaScript 形式（`GM_addStyle` 注入）** での記述を推奨します（詳細は [AGENTS.md](./AGENTS.md) 参照）。
+| ファイル名 | 名称 (@name) | 対象サイト (@match) | インストール (Raw URL) | 概要 |
+| :--- | :--- | :--- | :--- | :--- |
+| `yt_comments_hide.js` | Hide comments and live chat on YouTube | `youtube.com` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/yt_comments_hide.js) | YouTube 動画ページのコメント欄およびライブチャット欄を非表示 |
+| `qlover_comments_hide.js` | QloveR コメント非表示 | `qlover.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/qlover_comments_hide.js) | 配信画面のチャット・コメント欄を非表示 |
+| `qlover_store_hide.js` | QloveR SmartBanner非表示 | `qlover.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/qlover_store_hide.js) | アプリインストール誘導バナー（SmartBanner）を非表示 |
+| `onsen_footer_hide.js` | Hide footer-bottom-wrapper on www.onsen.ag | `onsen.ag` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/onsen_footer_hide.js) | 画面下部の不要なフッター領域を非表示 |
+| `joqr_cpr_hide.js` | JOQR Hide Copyright | `joqr.co.jp/ag` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/joqr_cpr_hide.js) | 著作権表示フッターを非表示 |
+| `hibiki_news_hide.js` | Hide news-list on hibiki-radio.jp | `hibiki-radio.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/hibiki_news_hide.js) | ニュース一覧セクションを非表示 |
+| `ab_comments_hide.js` | HideBlogComments | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_comments_hide.js) | 会員限定ブログのコメント欄を非表示 |
+| `ab_notice_hide.js` | Hide sub-txt-list on apollobaycruiser.jp | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_notice_hide.js) | サブテキスト一覧（お知らせ等）を非表示 |
+| `nagi_footer_hide.js` | Hide footer-bottom on aoyamanagisa.jp | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_footer_hide.js) | サイト下部フッターを非表示 |
+| `nagi_hide_title.js` | Hide timeline title card on aoyamanagisa.jp | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_hide_title.js) | タイムライン画面の巨大なタイトルカードを非表示 |
+| `liella_banner_hide.js` | Hide bnrlink on yuigaoka top only | `lovelive-anime.jp/yuigaoka` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/liella_banner_hide.js) | ページ上部・下部の各種バナーリンクを非表示 |
+| `liellaclub_caption_footer_hide.js` | Hide selected elements on lovelive-liellaclub.jp | `lovelive-liellaclub.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/liellaclub_caption_footer_hide.js) | キャプションおよびフッターリンクを非表示 |
+| `lovelive_link_hide.js` | Hide link on lovelive | `lovelive-anime.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/lovelive_link_hide.js) | SNS リンク等の導線を非表示 |
 
 ---
 
