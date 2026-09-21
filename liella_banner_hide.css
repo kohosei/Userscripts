@@ -1,9 +1,0 @@
-/* ==UserStyle==
-@name           Hide bnrlink on yuigaoka top only
-@description    https://www.lovelive-anime.jp/yuigaoka/ の .bnrlink を非表示
-@match          https://www.lovelive-anime.jp/yuigaoka/
-==/UserStyle== */
-
-.bnrlink {
-  display: none !important;
-}
