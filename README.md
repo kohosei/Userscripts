@@ -22,13 +22,13 @@ flowchart TD
 
     subgraph SafariSync["📱 Apple デバイス (Safari Userscripts)"]
         iCloud["☁️ iCloud Drive 自動同期"]
-        iOS["📱 iPhone / iPad / Mac Safari (即座に自動反映)"]
+        iOS["📱 iPhone / iPad / Mac Safari<br>(即座に自動反映)"]
     end
 
-    subgraph BrowserSync["🌐 全プラットフォーム (Chrome / Firefox 等 Tampermonkey)"]
+    subgraph BrowserSync["🌐 PC ブラウザ (Tampermonkey)"]
         Git["🐙 Git Push (main ブランチ)"]
         GitHub["🐙 GitHub Raw (CDN)"]
-        Tampermonkey["💻 各 PC の Chrome / Firefox 等 (定期自動チェック & 更新)"]
+        Tampermonkey["💻 各 PC の Chrome / Firefox 等<br>(定期自動チェック & 更新)"]
     end
 
     Script -->|即時ファイル同期| iCloud
