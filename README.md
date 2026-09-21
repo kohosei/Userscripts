@@ -34,7 +34,7 @@ flowchart TD
     iCloud --> iOS
     Script -->|Modified Git-flow| Git
     Git --> GitHub
-    GitHub -->|@updateURL / @downloadURL| Tampermonkey
+    GitHub -->|"@updateURL / @downloadURL"| Tampermonkey
 ```
 
 ### 3つのコアメリット
