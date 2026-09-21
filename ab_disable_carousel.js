@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Disable Carousel Autoplay (Apollo Bay Cruiser)
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Apollo Bay Cruiserのトップページでカルーセルの自動スクロールを無効化します（ログイン後遷移・BFCache対応）
+// @version      1.3
+// @description  Apollo Bay Cruiserのトップページでカルーセルの自動スクロールを無効化します（ログイン後遷移・BFCache完全対応）
 // @match        https://apollobaycruiser.jp/*
 // @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js
 // @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js
@@ -96,7 +96,6 @@
     };
 
     // 3. ページライフサイクルに応じた多重実行
-    // 即時実行
     stopAllCarousels();
 
     if (document.readyState === 'loading') {
