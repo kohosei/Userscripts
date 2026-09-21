@@ -5,6 +5,8 @@
 // @description  音泉のお気に入り番組を 元の順番 / 更新順 / 逆順 でトグル切替。デフォルトは更新順。お気に入り番組タブ表示時のみボタンを表示。
 // @author       you
 // @match        https://www.onsen.ag/
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/onsen_order.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/onsen_order.js
 // @grant        GM_xmlhttpRequest
 // @connect      www.onsen.ag
 // ==/UserScript==

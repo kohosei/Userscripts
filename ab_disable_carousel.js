@@ -4,6 +4,8 @@
 // @version      1.1
 // @description  Apollo Bay Cruiserのトップページでカルーセルの自動スクロールを無効化します（ログイン後遷移・BFCache対応）
 // @match        https://apollobaycruiser.jp/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==

@@ -18,17 +18,19 @@ iOS / iPadOS / macOS の Safari 拡張機能 **「Userscripts」** および **T
 ## 📁 スクリプト & スタイル カタログ
 
 ### 📜 Userscripts (`.js`) - 機能拡張・自動化
-| ファイル名 | 名称 (@name) | 対象サイト (@match) | 概要 |
-| :--- | :--- | :--- | :--- |
-| `x_swipe.js` | X (Twitter) Swipe Tab Switcher | `x.com`, `twitter.com` | タイムラインタブ（おすすめ / フォロー中 / リスト）を左右スワイプで切り替え |
-| `x_reply_hide.js` | Hide_X_Replies | `x.com`, `twitter.com` | ツイート詳細ページでリプライ欄を非表示（ポスト主自身のリプライは残す） |
-| `instagram_comments_hide.js` | InstagramLiveCommentHider | `instagram.com` | Instagram Live 視聴時のコメント欄および関連 UI を非表示 |
-| `onsen_order.js` | 音泉 お気に入り番組 並び替えトグル | `onsen.ag` | お気に入り番組の表示順（デフォルト / 更新順 / 逆順）をワンタップ切替 |
-| `ab_auto_login.js` | plusmember apollobay auto login | `secure.plusmember.jp` | Apollo Bay ログイン画面での自動ログイン実行 |
-| `ab_open_login_page.js` | apollobaycruiser auto open login | `apollobaycruiser.jp` | 未ログイン状態を検知して自動でログインページへ遷移 |
-| `ab_disable_carousel.js` | Disable Carousel Autoplay | `apollobaycruiser.jp` | トップページのカルーセル自動スクロールを停止 |
-| `nagi_auto_login.js` | aoyamanagisa mypage auto login | `aoyamanagisa.jp` | マイページへのリダイレクトおよび自動ログイン |
-| `nagi_mypage_redirect.js` | aoyamanagisa mypage redirect | `aoyamanagisa.jp` | ログインページ以外の特定画面からマイページへ自動転送 |
+全スクリプトに Tampermonkey 自動更新用メタデータ（`@updateURL` / `@downloadURL`）が付与されています。Chrome で以下のリンク（Raw URL）を開くと、Tampermonkey のインストール画面が自動起動します。
+
+| ファイル名 | 名称 (@name) | 対象サイト (@match) | インストール (Raw URL) | 概要 |
+| :--- | :--- | :--- | :--- | :--- |
+| `x_swipe.js` | X (Twitter) Swipe Tab Switcher | `x.com`, `twitter.com` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/x_swipe.js) | タイムラインタブ（おすすめ / フォロー中 / リスト）を左右スワイプで切り替え |
+| `x_reply_hide.js` | Hide_X_Replies | `x.com`, `twitter.com` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/x_reply_hide.js) | ツイート詳細ページでリプライ欄を非表示（ポスト主自身のリプライは残す） |
+| `instagram_comments_hide.js` | InstagramLiveCommentHider | `instagram.com` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/instagram_comments_hide.js) | Instagram Live 視聴時のコメント欄および関連 UI を非表示 |
+| `onsen_order.js` | 音泉 お気に入り番組 並び替えトグル | `onsen.ag` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/onsen_order.js) | お気に入り番組の表示順（デフォルト / 更新順 / 逆順）をワンタップ切替 |
+| `ab_auto_login.js` | plusmember apollobay auto login | `secure.plusmember.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_auto_login.js) | Apollo Bay ログイン画面での自動ログイン実行 |
+| `ab_open_login_page.js` | apollobaycruiser auto open login | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_open_login_page.js) | 未ログイン状態を検知して自動でログインページへ遷移 |
+| `ab_disable_carousel.js` | Disable Carousel Autoplay | `apollobaycruiser.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/ab_disable_carousel.js) | トップページのカルーセル自動スクロールを停止 |
+| `nagi_auto_login.js` | aoyamanagisa mypage auto login | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_auto_login.js) | マイページへのリダイレクトおよび自動ログイン |
+| `nagi_mypage_redirect.js` | aoyamanagisa mypage redirect | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_mypage_redirect.js) | ログインページ以外の特定画面からマイページへ自動転送 |
 
 ---
 
@@ -64,9 +66,17 @@ iOS / iPadOS / macOS の Safari 拡張機能 **「Userscripts」** および **T
 4. これにより、Mac で本リポジトリを編集・コミットするたびに、iOS 端末へ自動的にスクリプトが同期・適用されます。
    *(※iOS 18 / macOS 15 以降では、ファイルがローカルから退避されないよう「ダウンロードしたままにする」設定を推奨)*
 
-### 2. macOS Safari / Tampermonkey での利用
-- **Safari Userscripts**: 上記と同様に保存先ディレクトリを本フォルダに指定。
-- **Tampermonkey**: 各 `.js` ファイルをスクリプトダッシュボードにインポートまたはファイル URL から登録。
+### 2. Chrome / Tampermonkey での利用（自動更新対応）
+1. Chrome ウェブストアから **[Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)** をインストール。
+2. 上記カタログの「インストール (Raw Link)」をクリックするか、URL を Chrome で直接開きます。
+3. Tampermonkey のインストール画面が表示されるので **「インストール」** をクリックします。
+4. **🔄 自動更新の仕組み**:
+   - スクリプトには `@updateURL` / `@downloadURL` が設定されており、本リポジトリの `main` ブランチに更新（および `@version` の引き上げ）がマージされると、Tampermonkey が自動で最新版を取得・更新します。
+   - 他の PC の Chrome でも同様にインストールしておくことで、常に全端末で最新のスクリプトが維持されます。
+   - 即座に更新を確認したい場合は、Tampermonkey ダッシュボードの「スクリプトの更新を確認」を実行してください。
+
+### 3. macOS Safari (Safari Userscripts) での利用
+- 上記「1. iOS / iPadOS での利用」と同様に、保存先ディレクトリを iCloud Drive の本フォルダに指定するだけで、追加の手順なしに自動反映されます。
 
 ---
 

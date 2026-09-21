@@ -88,6 +88,8 @@ Tampermonkey および Safari Userscripts (`quoid/userscripts`) の公式最新�
 // @version      1.0
 // @description  [スクリプトの説明]
 // @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
@@ -123,6 +125,8 @@ Tampermonkey と Safari Userscripts の両方で確実にスタイルを適用�
 // @version      1.0
 // @description  [スタイルの説明]
 // @match        [対象サイトのURLパターン（例: https://example.com/*）]
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/[ファイル名].js
 // @grant        GM_addStyle
 // @run-at       document-start
 // ==/UserScript==
@@ -239,9 +243,17 @@ node --check *.js
 
 ### 2. メタデータヘッダー検査
 スクリプトにヘッダーが欠落していないか確認します。
-- `.js` ファイル: `grep -L "==UserScript==" *.js` の出力が空であること
-- `.css` ファイル: `grep -L "==UserStyle==" *.css` の出力が空であること
-- CSS専用検査: `grep -E "@run-at|@inject-into" *.css` の出力が空であること（CSSへのJS用メタデータ混入防止）
+- `.js` ファイル:
+  - `grep -L "==UserScript==" *.js` の出力が空であること
+  - `grep -L "@updateURL" *.js` の出力が空であること（Tampermonkey 自動更新 URL の設定漏れ防止）
+  - `grep -L "@version" *.js` の出力が空であること（Tampermonkey の更新検知用バージョンの設定漏れ防止）
+- `.css` ファイル:
+  - `grep -L "==UserStyle==" *.css` の出力が空であること
+  - `grep -E "@run-at|@inject-into" *.css` の出力が空であること（CSSへのJS用メタデータ混入防止）
+
+### 3. バージョン更新（Version Bump）の原則
+Tampermonkey は `@version` の数値が上がったことを検知して自動更新を実行します。
+スクリプトの改修・バグ修正を行った際は、**必ず `@version` をインクリメント** してください（例: `1.0` → `1.1`、`1.2.1` → `1.2.2`）。
 
 ---
 
