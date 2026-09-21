@@ -1,6 +1,11 @@
 // ==UserScript==
 // @name         aoyamanagisa mypage redirect + auto login
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  マイページへのリダイレクトおよび自動ログイン
 // @match        https://aoyamanagisa.jp/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_auto_login.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_auto_login.js
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==

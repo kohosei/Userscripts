@@ -4,6 +4,8 @@
 // @version      1.1
 // @description  Instagram Liveのコメント欄（返信含む）や関連UIを非表示にするスクリプト（安定版）
 // @match        https://www.instagram.com/*
+// @updateURL    https://raw.githubusercontent.com/kohosei/Userscripts/main/instagram_comments_hide.js
+// @downloadURL  https://raw.githubusercontent.com/kohosei/Userscripts/main/instagram_comments_hide.js
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
