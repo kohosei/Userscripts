@@ -13,7 +13,7 @@
 - **配信リポジトリ**: `https://github.com/kohosei/Userscripts` (Public)
 - **主言語 / ランタイム**: JavaScript (ES2020+), Node.js v23+
 - **AI エージェントの主要な責務**:
-  - Tampermonkey（Chrome）および Safari Userscripts（iOS / Mac）の**両環境で 100% 互換動作するスクリプト（`.js`）** を作成・保守する。
+  - Tampermonkey（Chrome / Firefox 等）および Safari Userscripts（iOS / Mac）の**両環境で 100% 互換動作するスクリプト（`.js`）** を作成・保守する。
   - スタイルシートも含め、すべて JavaScript（`GM_addStyle` 注入）形式で作成し、Stylus 等の別拡張機能に依存しない統一環境を維持する。
   - スクリプト追加・変更時には、Tampermonkey の自動更新（`@version`, `@updateURL`）および `README.md` カタログの整合性を自動で担保する。
 
