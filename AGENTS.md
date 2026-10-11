@@ -27,14 +27,14 @@
 ```
 [iCloud Drive (iOS同期領域 / ワークツリー)]
 /Users/user/Library/Mobile Documents/com~apple~CloudDocs/Userscripts/
-  ├── .git (テキストファイル: gitdir: /Users/user/_Costom_Local_User_Folder/_Antigravity/userscripts.git を指す)
+  ├── .git (テキストファイル: gitdir: /Users/user/_userlocal/_Antigravity/userscripts.git を指す)
   ├── .gitignore
   ├── AGENTS.md
   ├── README.md
   └── *.js (スクリプト本体群: 全て .js に一本化)
 
 [ローカルストレージ (Git管理領域 / 実体)]
-/Users/user/_Costom_Local_User_Folder/_Antigravity/userscripts.git/
+/Users/user/_userlocal/_Antigravity/userscripts.git/
   └── (HEAD, refs, objects, index などのGit実体)
 ```
 
