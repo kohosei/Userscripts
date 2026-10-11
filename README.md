@@ -86,6 +86,7 @@ Stylus は不要です。Tampermonkey と Safari Userscripts の両方で同一�
 | `nagi_footer_hide.js` | Hide footer-bottom on aoyamanagisa.jp | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_footer_hide.js) | サイト下部フッターを非表示 |
 | `nagi_hide_title.js` | Hide timeline title card on aoyamanagisa.jp | `aoyamanagisa.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/nagi_hide_title.js) | タイムライン画面の巨大なタイトルカードを非表示 |
 | `liella_banner_hide.js` | Hide bnrlink on yuigaoka top only | `lovelive-anime.jp/yuigaoka` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/liella_banner_hide.js) | ページ上部・下部の各種バナーリンクを非表示 |
+| `liella_social_hide.js` | Hide social on yuigaoka | `lovelive-anime.jp/yuigaoka/*` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/liella_social_hide.js) | ソーシャル共有ボタン・SNS導線（`.social`）を非表示 |
 | `liellaclub_caption_footer_hide.js` | Hide selected elements on lovelive-liellaclub.jp | `lovelive-liellaclub.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/liellaclub_caption_footer_hide.js) | キャプションおよびフッターリンクを非表示 |
 | `lovelive_link_hide.js` | Hide link on lovelive | `lovelive-anime.jp` | [Raw Link](https://raw.githubusercontent.com/kohosei/Userscripts/main/lovelive_link_hide.js) | SNS リンク等の導線を非表示 |
 
