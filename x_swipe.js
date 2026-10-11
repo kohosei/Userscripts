@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X (Twitter) Swipe Tab Switcher
 // @namespace    http://tampermonkey.net/
-// @version      1.2.1
+// @version      1.2.2
 // @description  X のタイムラインタブ（For you / Following / 固定List）を左右スワイプで切り替える
 // @author       You
 // @match        https://x.com/*
@@ -24,9 +24,10 @@
   let startActiveIdx = -1;
   let isIgnoredTouch = false;
   let lastSwipeTime = 0;
-  const SWIPE_THRESHOLD = 50;   // スワイプと判定する最小px
-  const ANGLE_LIMIT = 45;        // 水平方向の角度制限（度）
-  const SWIPE_COOLDOWN = 350;   // スワイプ後のクールダウン時間(ms)
+  const SWIPE_THRESHOLD = 50;      // スワイプと判定する最小px
+  const ANGLE_LIMIT = 45;          // 水平方向の角度制限（度）
+  const SWIPE_COOLDOWN = 350;      // スワイプ後のクールダウン時間(ms)
+  const IGNORE_IMAGE_SWIPE = true; // 画像・メディア上のスワイプを対象外にするか（true: 対象外 / false: 有効）
 
   // タブ要素を取得する関数
   function getTabLinks() {
@@ -74,25 +75,27 @@
     if (!el) return false;
 
     // 1. 画像・動画・メディア関連要素のチェック
-    const mediaSelector = [
-      'img',
-      'video',
-      'canvas',
-      'svg',
-      '[role="img"]',
-      '[data-testid="tweetPhoto"]',
-      '[data-testid="tweetPhotoRow"]',
-      '[data-testid="media"]',
-      '[data-testid="videoPlayer"]',
-      '[data-testid="videoComponent"]',
-      '[data-testid="swipe-gallery"]',
-      '[data-testid="PhotoRail"]',
-      '[data-testid="lightbox"]',
-      '[role="dialog"]'
-    ].join(',');
+    if (IGNORE_IMAGE_SWIPE) {
+      const mediaSelector = [
+        'img',
+        'video',
+        'canvas',
+        'svg',
+        '[role="img"]',
+        '[data-testid="tweetPhoto"]',
+        '[data-testid="tweetPhotoRow"]',
+        '[data-testid="media"]',
+        '[data-testid="videoPlayer"]',
+        '[data-testid="videoComponent"]',
+        '[data-testid="swipe-gallery"]',
+        '[data-testid="PhotoRail"]',
+        '[data-testid="lightbox"]',
+        '[role="dialog"]'
+      ].join(',');
 
-    if (el.closest(mediaSelector)) {
-      return true;
+      if (el.closest(mediaSelector)) {
+        return true;
+      }
     }
 
     // 2. 横スクロール可能なコンテナのチェック（トップのタブバー領域以外）
